@@ -40,16 +40,59 @@ NETSUITE_TOKEN_SECRET="your-token-secret"
 
 ## Usage
 
-Pipe a SuiteQL query to the script via stdin:
+### Interactive Mode
+
+Run without arguments to start the interactive REPL:
+
+```bash
+uv run suiteql.py
+```
+
+Features:
+- SQL syntax highlighting
+- Multiline editing — **Alt+Enter** to execute, **Enter** for newline
+- Persistent history (`~/.suiteql_history`)
+- Ghost-text suggestions from history
+- Open query in `$EDITOR` with **Ctrl+X, E**
+- Rich table output with pagination info
+- Spinner while queries run
+
+### Meta-Commands
+
+| Command | Action |
+|---------|--------|
+| `\q` | Quit |
+| `\f <file>` | Load and execute SQL from a file |
+| `\j` | Toggle JSON/table output |
+| `\fmt` | Format last query with sqlparse |
+| `\l <n>` | Set default LIMIT (`\l` to clear) |
+| `\o <n>` | Set default OFFSET (`\o` to clear) |
+| `\n` | Next page |
+| `\p` | Previous page |
+| `\h` | Show help |
+
+### Piped Mode
+
+Pipe a SuiteQL query via stdin:
 
 ```bash
 echo "SELECT id, companyname FROM customer FETCH FIRST 10 ROWS ONLY" | uv run suiteql.py
 ```
 
+### File Mode
+
+Pass a SQL file as a positional argument:
+
+```bash
+uv run suiteql.py query.sql
+```
+
 ### Options
 
-- `--limit`: Number of results to return
-- `--offset`: Number of results to skip (for pagination)
+- `--limit` — Number of results to return
+- `--offset` — Number of results to skip (for pagination)
+- `--json` — Output compact JSON (no indentation)
+- `-i`, `--interactive` — Force interactive mode
 
 ```bash
 echo "SELECT id, companyname FROM customer" | uv run suiteql.py --limit 5 --offset 10
@@ -57,4 +100,5 @@ echo "SELECT id, companyname FROM customer" | uv run suiteql.py --limit 5 --offs
 
 ## Output
 
-Results are returned as JSON to stdout. Status messages are written to stderr.
+- **Interactive mode**: Rich tables by default, toggle to JSON with `\j`
+- **Piped/file mode**: JSON to stdout, status messages to stderr
